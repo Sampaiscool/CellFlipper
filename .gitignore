@@ -1,0 +1,17 @@
+# Ignore Unity temp/cache files 
+Temp/ 
+Library/ 
+Obj/ 
+.vs/ 
+*.csproj 
+*.sln 
+*.user 
+*.userprefs 
+*.pidb 
+*.booproj 
+*.svd 
+*.pdb 
+*.mdb 
+*.opendb 
+*.VC.db 
+*.pidb.meta 

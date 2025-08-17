@@ -1,0 +1,6 @@
+# Unity line endings 
+*.cs text eol=crlf 
+*.shader text eol=lf 
+*.txt text eol=crlf 
+*.asset text eol=crlf 
+*.unity text eol=crlf 

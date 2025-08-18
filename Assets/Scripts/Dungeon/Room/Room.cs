@@ -19,19 +19,21 @@ public class Room : MonoBehaviour
         width = data.width;
         height = data.height;
 
-        // Set layout
         gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         gridLayout.constraintCount = width;
 
-        // Clear old children
+        // Cleanup old cells and listeners
         foreach (Transform child in gridLayout.transform)
+        {
+            var cell = child.GetComponent<Cell>();
+            if (cell != null)
+                cell.Cleanup();
             Destroy(child.gameObject);
+        }
         cells.Clear();
 
-        // Spawn cells
         int total = width * height;
 
-        // If array too short, fill with zeros
         if (roomData.cellTypes.Length < total)
         {
             int[] newArray = new int[total];
@@ -44,17 +46,14 @@ public class Room : MonoBehaviour
         {
             var obj = Instantiate(cellPrefab, gridLayout.transform);
             var cell = obj.GetComponent<Cell>();
-            cell.Init(i, this);
-
             int type = roomData.cellTypes[i];
-            cell.SetType(type); // new method in Cell
+            cell.Init(i, this, type);
             cells.Add(cell);
         }
     }
 
     public void OnCellClicked(int index)
     {
-        // Flip neighbors
         Flip(index);
         Flip(index - width);
         Flip(index + width);
@@ -62,9 +61,7 @@ public class Room : MonoBehaviour
         if (index % width != width - 1) Flip(index + 1);
 
         if (IsSolved())
-        {
             DungeonManager.Instance.OnRoomSolved(this);
-        }
     }
 
     void Flip(int index)
@@ -76,10 +73,15 @@ public class Room : MonoBehaviour
     bool IsSolved()
     {
         foreach (var c in cells)
-        {
-            if (c.type == 1 && !c.isOn) return false; // only normal active cells count
-            // you could add other type-based checks here later
-        }
+            if (!c.isOn) return false;
         return true;
+    }
+
+    // Call this before destroying the room
+    public void Cleanup()
+    {
+        foreach (var c in cells)
+            c.Cleanup();
+        cells.Clear();
     }
 }

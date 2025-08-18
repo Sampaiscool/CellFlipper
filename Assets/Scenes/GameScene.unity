@@ -392,8 +392,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01fe2173bfaf98147b9a1867dfa392f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomPool:
-  - {fileID: 11400000, guid: 41bf47b85fd736d4d9d3b89a71a980a2, type: 2}
+  roomGroups:
+  - difficulty: 0
+    theme: 0
+    rooms:
+    - {fileID: 11400000, guid: 0d34387e193702044b2a322bd2ea4ddf, type: 2}
+    - {fileID: 11400000, guid: bcbf049e027508746921498f89a0726a, type: 2}
+    - {fileID: 11400000, guid: 99a8206b4c4649f4b8df5887c11bfaaf, type: 2}
+    - {fileID: 11400000, guid: 41bf47b85fd736d4d9d3b89a71a980a2, type: 2}
+    - {fileID: 11400000, guid: 8979dd87b563790498accf233d3c9b98, type: 2}
+  - difficulty: 1
+    theme: 0
+    rooms:
+    - {fileID: 11400000, guid: ffd071f0a4182c74fa06685d6b0f213d, type: 2}
+  - difficulty: 2
+    theme: 0
+    rooms:
+    - {fileID: 11400000, guid: 2eda2bf07b00ea6439d16f7646c98c83, type: 2}
+  - difficulty: 3
+    theme: 0
+    rooms:
+    - {fileID: 11400000, guid: b4729152d44ed9040b305645994c2e92, type: 2}
   roomPrefab: {fileID: 6563511438092041140, guid: 20fb17304c08fc64dbfd031db8c344f8, type: 3}
   dungeonParent: {fileID: 2058946978}
 --- !u!1 &1221784988

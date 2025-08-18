@@ -1,14 +1,17 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [Header("Dungeon Settings")]
-    public int dungeonLength = 5; // how many rooms per run
-    public Difficulties difficulty = Difficulties.Easy; // example, can hook to menu
-    public int seed = 0; // optional, for reproducibility
+    [Header("Run Settings")]
+    public Difficulties currentDifficulty;
+    public int dungeonLength = 5; // how many rooms per block
+    public int blockIndex = 0;    // which 5-level block we’re on
+
+    public List<RoomSO> currentPool = new List<RoomSO>();
 
     void Awake()
     {
@@ -16,21 +19,29 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            Canvas.ForceUpdateCanvases();
         }
-        else
-        {
-            Destroy(gameObject);
-        }
+        else Destroy(gameObject);
     }
 
-    public void StartNewRun()
+    public void StartRun(Difficulties diff)
     {
-        if (seed == 0)
-        {
-            seed = Random.Range(1, int.MaxValue); // random seed if not set
-        }
-        Random.InitState(seed);
+        currentDifficulty = diff;
+        blockIndex = 0;
 
-        SceneManager.LoadScene("GameScene");
+        StartCoroutine(LoadSceneSafe("GameScene"));
+    }
+
+    private System.Collections.IEnumerator LoadSceneSafe(string sceneName)
+    {
+        // Yield one frame to let Unity settle temp allocations
+        yield return null;
+        SceneManager.LoadScene(sceneName);
+    }
+
+    public void NextBlock()
+    {
+        blockIndex++;
     }
 }

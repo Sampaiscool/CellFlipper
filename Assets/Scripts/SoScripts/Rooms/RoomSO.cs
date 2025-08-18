@@ -37,7 +37,6 @@ public class RoomSOEditor : Editor
         room.theme = (Themes)EditorGUILayout.EnumPopup("Theme", room.theme);
         room.difficulty = (Difficulties)EditorGUILayout.EnumPopup("Difficulty", room.difficulty);
 
-        // Ensure array matches grid size
         int total = room.width * room.height;
         if (room.cellTypes == null || room.cellTypes.Length != total)
         {
@@ -47,8 +46,17 @@ public class RoomSOEditor : Editor
             room.cellTypes = newArray;
         }
 
-        // Grid display
+        EditorGUILayout.Space();
+
+        // Reset button
+        if (GUILayout.Button("Reset Grid"))
+        {
+            for (int i = 0; i < room.cellTypes.Length; i++)
+                room.cellTypes[i] = 0; // all reset to type 0
+        }
+
         EditorGUILayout.LabelField("Cell Types Grid:");
+
         for (int y = 0; y < room.height; y++)
         {
             EditorGUILayout.BeginHorizontal();
@@ -56,18 +64,16 @@ public class RoomSOEditor : Editor
             {
                 int index = y * room.width + x;
 
-                // Determine color based on number
-                Color bg = GetColorForType(room.cellTypes[index]);
-
-                // Draw colored box first
+                // Draw colored box
                 Rect rect = GUILayoutUtility.GetRect(30, 30);
-                EditorGUI.DrawRect(rect, bg);
+                DrawCellVisual(rect, room.cellTypes[index]);
 
-                // Draw the number on top
+                // Draw number field on top
                 int newValue = EditorGUI.IntField(rect, room.cellTypes[index], new GUIStyle()
                 {
                     alignment = TextAnchor.MiddleCenter,
-                    fontStyle = FontStyle.Bold
+                    fontStyle = FontStyle.Bold,
+                    normal = new GUIStyleState() { textColor = Color.black }
                 });
 
                 if (newValue != room.cellTypes[index])
@@ -80,28 +86,37 @@ public class RoomSOEditor : Editor
             EditorUtility.SetDirty(room);
     }
 
-    // Map numbers to colors
-    private Color GetColorForType(int type)
+    private void DrawCellVisual(Rect rect, int type)
     {
-        return type switch
+        switch (type)
         {
-            0 => Color.blue,
-            1 => Color.yellow,
-            2 => Color.red,
-            3 => Color.green,
-            _ => Color.white
-        };
-    }
+            case 0:
+                EditorGUI.DrawRect(rect, Color.blue);
+                break;
+            case 1:
+                EditorGUI.DrawRect(rect, Color.yellow);
+                break;
+            case 2:
+                // Blue background
+                EditorGUI.DrawRect(rect, Color.blue);
 
-    // Helper for creating a 1x1 texture of a solid color
-    private Texture2D MakeTex(int width, int height, Color col)
-    {
-        Color[] pix = new Color[width * height];
-        for (int i = 0; i < pix.Length; i++) pix[i] = col;
-        Texture2D result = new Texture2D(width, height);
-        result.SetPixels(pix);
-        result.Apply();
-        return result;
+                // Draw a small green circle in the center
+                Handles.BeginGUI();
+                Color prev = Handles.color;
+                Handles.color = Color.green;
+                Vector2 center = new Vector2(rect.x + rect.width / 2, rect.y + rect.height / 2);
+                float radius = rect.width * 0.10f; // small circle
+                Handles.DrawSolidDisc(center, Vector3.forward, radius);
+                Handles.color = prev;
+                Handles.EndGUI();
+                break;
+            case 3:
+                EditorGUI.DrawRect(rect, Color.red);
+                break;
+            default:
+                EditorGUI.DrawRect(rect, Color.white);
+                break;
+        }
     }
 }
 

@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
 
     public List<RoomSO> currentPool = new List<RoomSO>();
 
+    public int CurrentTurn { get; private set; } = 0;
+
     void Awake()
     {
         if (Instance == null)
@@ -43,5 +45,14 @@ public class GameManager : MonoBehaviour
     public void NextBlock()
     {
         blockIndex++;
+    }
+
+    public void NextTurn()
+    {
+        CurrentTurn++;
+        Debug.Log($"Turn advanced to {CurrentTurn}");
+
+        if (DungeonManager.Instance.CurrentRoom != null)
+            DungeonManager.Instance.CurrentRoom.UpdateLeavesCells();
     }
 }

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8192320d275c2be47995913a626a4dc2, type: 3}
+  m_Name: TwilightThicket
+  m_EditorClassIdentifier: 
+  width: 6
+  height: 5
+  cellTypes: 000000000100000000000000020000000000000001000000010000000000000002000000000000000100000000000000000000000200000001000000000000000100000000000000020000000000000001000000020000000000000001000000000000000100000000000000020000000100000000000000
+  roomName: Twilight Thicket
+  timeLimit: 60
+  theme: 1
+  difficulty: 2

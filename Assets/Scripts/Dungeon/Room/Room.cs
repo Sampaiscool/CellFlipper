@@ -13,6 +13,9 @@ public class Room : MonoBehaviour
     private int width;
     private int height;
 
+    private bool[] initialOnStates;
+    private int[] initialTypes;
+
     public void BuildRoom(RoomSO data)
     {
         roomData = data;
@@ -50,15 +53,25 @@ public class Room : MonoBehaviour
             cell.Init(i, this, type);
             cells.Add(cell);
         }
+
+        initialTypes = new int[cells.Count];
+        initialOnStates = new bool[cells.Count];
+        for (int i = 0; i < cells.Count; i++)
+        {
+            initialTypes[i] = cells[i].type;
+            initialOnStates[i] = cells[i].isOn;
+        }
     }
 
     public void OnCellClicked(int index)
     {
-        Flip(index);
-        Flip(index - width);
-        Flip(index + width);
-        if (index % width != 0) Flip(index - 1);
-        if (index % width != width - 1) Flip(index + 1);
+        Flip(index);                 // clicked cell
+        Flip(index - width);         // above
+        Flip(index + width);         // below
+        if (index % width != 0) Flip(index - 1);          // left
+        if (index % width != width - 1) Flip(index + 1);  // right
+
+        GameManager.Instance.NextTurn();
 
         if (IsSolved())
             DungeonManager.Instance.OnRoomSolved(this);
@@ -75,6 +88,24 @@ public class Room : MonoBehaviour
         foreach (var c in cells)
             if (!c.isOn) return false;
         return true;
+    }
+    public void ResetRoom()
+    {
+        for (int i = 0; i < cells.Count; i++)
+        {
+            cells[i].SetType(initialTypes[i]);
+            if (cells[i].isOn != initialOnStates[i])
+            {
+                cells[i].Toggle(); // flips back to original state
+            }
+            cells[i].leavesCooldown = 0;
+        }
+    }
+
+    public void UpdateLeavesCells()
+    {
+        foreach (var cell in cells)
+            cell.TickCooldown();
     }
 
     // Call this before destroying the room

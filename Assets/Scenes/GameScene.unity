@@ -354,9 +354,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7348211490955374011, guid: 20fb17304c08fc64dbfd031db8c344f8, type: 3}
-        m_TargetAssemblyTypeName: Room, Assembly-CSharp
-        m_MethodName: ResetRoom
+      - m_Target: {fileID: 1016318961}
+        m_TargetAssemblyTypeName: DungeonManager, Assembly-CSharp
+        m_MethodName: RespawnRoomButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -834,6 +834,38 @@ MonoBehaviour:
     - {fileID: 11400000, guid: cb0f7e1b96a870041801d192d33077cb, type: 2}
     - {fileID: 11400000, guid: 78e093d40186a9b42a46327d65298f8a, type: 2}
     - {fileID: 11400000, guid: a55c925cf6c7f744eb59a5d5407bbfe5, type: 2}
+  - difficulty: 0
+    theme: 2
+    rooms:
+    - {fileID: 11400000, guid: 90f60f599533f9c45897b93ffc13953b, type: 2}
+    - {fileID: 11400000, guid: 58f27ef4b37653f44ae00d5ce2001321, type: 2}
+    - {fileID: 11400000, guid: f685395b6c2b362439998c103883502a, type: 2}
+    - {fileID: 11400000, guid: f763ca7a49423a54aba72b94f757e335, type: 2}
+    - {fileID: 11400000, guid: 09a36197d4315fa4e9116136c7b32b25, type: 2}
+  - difficulty: 1
+    theme: 2
+    rooms:
+    - {fileID: 11400000, guid: b78959a48a190764ab2fb523b61ec452, type: 2}
+    - {fileID: 11400000, guid: bd6cecee48b7953459664327782289ba, type: 2}
+    - {fileID: 11400000, guid: de89ebbf5b5342b4da8075dba1f679b2, type: 2}
+    - {fileID: 11400000, guid: f1fe811036ec00240ab2753143ed7a85, type: 2}
+    - {fileID: 11400000, guid: 904a6c686050c8143aa26e002d61880c, type: 2}
+  - difficulty: 2
+    theme: 2
+    rooms:
+    - {fileID: 11400000, guid: 1d36b6178954b024598280682899cf13, type: 2}
+    - {fileID: 11400000, guid: 4bd2c8d3f9ee5eb4686cca3d7b46bf04, type: 2}
+    - {fileID: 11400000, guid: bc1afd5251a530e4a8daf03b06767b77, type: 2}
+    - {fileID: 11400000, guid: c436f43c5e172f64f96ca9f2c4da4b7b, type: 2}
+    - {fileID: 11400000, guid: b8ca41b49c00ac6459ab34514974d053, type: 2}
+  - difficulty: 3
+    theme: 2
+    rooms:
+    - {fileID: 11400000, guid: a38a871f100dcc741ae7c048705c0da0, type: 2}
+    - {fileID: 11400000, guid: 3b27dedbd318fe0439fb1c42ae73111b, type: 2}
+    - {fileID: 11400000, guid: dd4547c92701cc44489e9aec8df0ce3d, type: 2}
+    - {fileID: 11400000, guid: 9a4462a4b3a030643944a67a6b53fed9, type: 2}
+    - {fileID: 11400000, guid: e1cf6c1ae4c79214695287975251a484, type: 2}
   roomPrefab: {fileID: 6563511438092041140, guid: 20fb17304c08fc64dbfd031db8c344f8, type: 3}
   dungeonParent: {fileID: 2058946978}
 --- !u!1 &1104380965

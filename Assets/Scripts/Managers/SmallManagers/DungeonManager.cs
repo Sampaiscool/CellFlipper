@@ -112,8 +112,7 @@ public class DungeonManager : MonoBehaviour
         SpawnNextRoom();
     }
 
-    // Developer: spawn any room
-    public void SpawnDeveloperRoom(RoomSO roomData)
+    public void RespawnRoom(RoomSO roomData)
     {
         if (currentRoom != null)
         {
@@ -125,7 +124,12 @@ public class DungeonManager : MonoBehaviour
         currentRoom = obj.GetComponent<Room>();
         currentRoom.BuildRoom(roomData);
 
-        Debug.Log($"[DungeonManager] Developer room spawned: {roomData.roomName}");
+        Debug.Log($"[DungeonManager] Room spawned: {roomData.roomName}");
+    }
+    public void RespawnRoomButton()
+    {
+        var current = DungeonManager.Instance.CurrentRoom.roomData;
+        RespawnRoom(current);
     }
 
     // Developer: skip current block and pick a new theme immediately

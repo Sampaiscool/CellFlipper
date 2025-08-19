@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class Cell : MonoBehaviour
 {
@@ -18,6 +19,10 @@ public class Cell : MonoBehaviour
     public Image leafOverlay;
     public float leafFadeDuration = 0.5f; // seconds
 
+    // SandstormCell properties
+    public Image sandstormOverlay;
+    public float sandstormFadeDuration = 0.5f;
+
     public void Init(int idx, Room parent, int type)
     {
         index = idx;
@@ -28,6 +33,28 @@ public class Cell : MonoBehaviour
         button.onClick.AddListener(() => parentRoom.OnCellClicked(index));
 
         SetType(type);
+
+        if (type == 3 && sandstormOverlay != null)
+        {
+            sandstormOverlay.gameObject.SetActive(true);
+            Color c = sandstormOverlay.color;
+            c.a = 0.3f; // faint always
+            sandstormOverlay.color = c;
+        }
+        else
+        {
+            sandstormOverlay.gameObject.SetActive(true);
+            Color c = sandstormOverlay.color;
+            c.a = 0.0f;
+            sandstormOverlay.color = c;
+        }
+        if (type == 2 && leafOverlay != null)
+        {
+            leafOverlay.gameObject.SetActive(true);
+            Color c = leafOverlay.color;
+            c.a = 0.3f; // faint always
+            leafOverlay.color = c;
+        }
     }
 
     public void SetType(int t)
@@ -36,50 +63,99 @@ public class Cell : MonoBehaviour
 
         switch (type)
         {
-            case 0: // Normal cell, unflipped
+            case 0: // Normal cell, starts OFF
                 SetState(false);
                 break;
-            case 1: // Starts flipped
+            case 1: // Starts flipped ON
                 SetState(true);
                 break;
-            case 2: // Leaves cell, unflipped but shows overlay if cooldown active
+            case 2: // Leaves cell
                 SetState(false);
                 if (leafOverlay != null)
                     leafOverlay.gameObject.SetActive(leavesCooldown > 0);
                 break;
+            case 3: // Sandstorm cell
+                SetState(false);
+                break;
+            case 4: // Broken cell: permanently ON and disabled
+                SetState(true);
+                if (button != null)
+                    button.interactable = false;
+                break;
         }
     }
 
-    public void SetState(bool state)
+    public void SetState(bool state, bool triggeredBySandstorm = false)
     {
         isOn = state;
         if (cellImage != null)
             cellImage.sprite = isOn ? onSprite : offSprite;
+
+        if (triggeredBySandstorm)
+            PlaySandstormEffect();
     }
 
-    public void Toggle()
+    public void Toggle(bool triggeredBySandstorm = false)
     {
-        int currentTurn = GameManager.Instance.CurrentTurn;
+        if (type == 4) return; // broken
+        if (type == 2 && leavesCooldown > 0) return;
 
-        // If locked due to leaves cooldown, block flipping
-        if (type == 2 && leavesCooldown > 0)
-        {
-            Debug.Log("Leaves block this cell!");
-            return;
-        }
-
-        // Flip normally
         SetState(!isOn);
 
-        // If type 2, apply leaves effect regardless of on/off
         if (type == 2)
         {
-            leavesCooldown = 2; // lock for next 2 turns
-            if (leafOverlay != null)
-                ShowLeaves();
+            leavesCooldown = 2;
+            ShowLeaves();
+        }
+
+        // Sandstorm effect for triggered cells
+        if (triggeredBySandstorm && sandstormOverlay != null)
+        {
+            float targetAlpha = (type == 3) ? 0.3f : 0f; // only type 3 remains faint
+            StartCoroutine(SandstormRoutine(targetAlpha));
         }
     }
 
+    // Let Room call this for visuals
+    public void PlaySandstormEffectIfNeeded()
+    {
+        if (type == 3) PlaySandstormEffect();
+    }
+
+    public void PlaySandstormEffect()
+    {
+        if (sandstormOverlay != null)
+        {
+            float targetAlpha = type == 3 ? 0.3f : 0f; // fade back to faint for type 3, invisible otherwise
+            StartCoroutine(SandstormRoutine(targetAlpha));
+        }
+    }
+
+    private IEnumerator SandstormRoutine(float targetAlpha)
+    {
+        if (sandstormOverlay == null) yield break;
+
+        sandstormOverlay.gameObject.SetActive(true);
+        Color c = sandstormOverlay.color;
+        c.a = 1f; // flash fully visible
+        sandstormOverlay.color = c;
+
+        float elapsed = 0f;
+        while (elapsed < sandstormFadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            c.a = Mathf.Lerp(1f, targetAlpha, elapsed / sandstormFadeDuration);
+            sandstormOverlay.color = c;
+            yield return null;
+        }
+
+        c.a = targetAlpha;
+        sandstormOverlay.color = c;
+
+        // if non-type-3, hide overlay after fade
+        if (type != 3)
+            sandstormOverlay.gameObject.SetActive(false);
+    }
 
     // Called each turn to decrement cooldown
     public void TickCooldown()
@@ -88,7 +164,10 @@ public class Cell : MonoBehaviour
         {
             leavesCooldown--;
             if (leavesCooldown <= 0 && leafOverlay != null)
-                HideLeaves();
+            {
+                // fade back to faint alpha only when cooldown ends
+                StartCoroutine(FadeLeavesToAlpha(0.3f, leafFadeDuration));
+            }
         }
     }
 
@@ -97,41 +176,47 @@ public class Cell : MonoBehaviour
         if (leafOverlay == null) return;
 
         leafOverlay.gameObject.SetActive(true);
-        StopCoroutine("FadeLeavesOut"); // stop any previous fade
-        Color c = leafOverlay.color;
-        c.a = 1f;
-        leafOverlay.color = c;
+        StopCoroutine(FadeLeavesToAlpha(0.3f, leafFadeDuration));
+
+        // Only fully visible if active
+        if (leavesCooldown > 0)
+        {
+            Color c = leafOverlay.color;
+            c.a = 1f; // fully visible
+            leafOverlay.color = c;
+        }
     }
+
     public void HideLeaves()
     {
         if (leafOverlay == null) return;
-
         StopCoroutine("FadeLeavesOut");
-        StartCoroutine(FadeLeavesOut());
+        StartCoroutine(FadeLeavesToAlpha(0.3f, leafFadeDuration));
     }
 
-    // Call this before destroying the cell
+    private IEnumerator FadeLeavesToAlpha(float targetAlpha, float duration)
+    {
+        float elapsed = 0f;
+        Color c = leafOverlay.color;
+        float startAlpha = c.a;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            c.a = Mathf.Lerp(startAlpha, targetAlpha, elapsed / duration);
+            leafOverlay.color = c;
+            yield return null;
+        }
+
+        c.a = targetAlpha;
+        leafOverlay.color = c;
+    }
+
     public void Cleanup()
     {
         if (button != null)
             button.onClick.RemoveAllListeners();
         cellImage = null;
         parentRoom = null;
-    }
-
-    private System.Collections.IEnumerator FadeLeavesOut()
-    {
-        float elapsed = 0f;
-        Color c = leafOverlay.color;
-        while (elapsed < leafFadeDuration)
-        {
-            elapsed += Time.deltaTime;
-            c.a = Mathf.Lerp(1f, 0f, elapsed / leafFadeDuration);
-            leafOverlay.color = c;
-            yield return null;
-        }
-        c.a = 0f;
-        leafOverlay.color = c;
-        leafOverlay.gameObject.SetActive(false);
     }
 }

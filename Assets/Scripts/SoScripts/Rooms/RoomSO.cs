@@ -111,7 +111,11 @@ public class RoomSOEditor : Editor
                 Handles.EndGUI();
                 break;
             case 3:
-                EditorGUI.DrawRect(rect, Color.red);
+                // Sandy cell: warm orange/yellow
+                EditorGUI.DrawRect(rect, new Color(0.96f, 0.76f, 0.26f, 1f));
+                break;
+            case 4:
+                EditorGUI.DrawRect(rect, Color.gray);
                 break;
             default:
                 EditorGUI.DrawRect(rect, Color.white);

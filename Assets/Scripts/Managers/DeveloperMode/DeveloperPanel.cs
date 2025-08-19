@@ -19,7 +19,7 @@ public class DeveloperPanel : MonoBehaviour
         if (GUI.Button(new Rect(20, 40, panelWidth - 40, 30), "Spawn Test Room"))
         {
             if (testRoom != null)
-                DungeonManager.Instance.SpawnDeveloperRoom(testRoom);
+                DungeonManager.Instance.RespawnRoom(testRoom);
         }
 
         // --- Next Room ---
@@ -27,16 +27,6 @@ public class DeveloperPanel : MonoBehaviour
         {
             if (DungeonManager.Instance.CurrentRoom != null)
                 DungeonManager.Instance.OnRoomSolved(DungeonManager.Instance.CurrentRoom);
-        }
-
-        // --- Reset Current Room ---
-        if (GUI.Button(new Rect(20, 120, panelWidth - 40, 30), "Reset Current Room"))
-        {
-            if (DungeonManager.Instance.CurrentRoom != null)
-            {
-                var current = DungeonManager.Instance.CurrentRoom.roomData;
-                DungeonManager.Instance.SpawnDeveloperRoom(current);
-            }
         }
 
         // --- Theme Dropdown ---

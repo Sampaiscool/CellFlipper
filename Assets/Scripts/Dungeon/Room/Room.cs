@@ -65,11 +65,24 @@ public class Room : MonoBehaviour
 
     public void OnCellClicked(int index)
     {
-        Flip(index);                 // clicked cell
-        Flip(index - width);         // above
-        Flip(index + width);         // below
-        if (index % width != 0) Flip(index - 1);          // left
-        if (index % width != width - 1) Flip(index + 1);  // right
+        Cell clicked = cells[index];
+
+        // Special rule for Sandstorm cells
+        if (clicked.type == 3)
+        {
+            clicked.Toggle();
+            clicked.PlaySandstormEffect(); // visual on the clicked one
+            TriggerSandstorm(index);       // do the full sandstorm sweep
+        }
+        else
+        {
+            // Normal + flipping
+            Flip(index);                 // clicked cell
+            Flip(index - width);         // above
+            Flip(index + width);         // below
+            if (index % width != 0) Flip(index - 1);          // left
+            if (index % width != width - 1) Flip(index + 1);  // right
+        }
 
         GameManager.Instance.NextTurn();
 
@@ -77,10 +90,10 @@ public class Room : MonoBehaviour
             DungeonManager.Instance.OnRoomSolved(this);
     }
 
-    void Flip(int index)
+    void Flip(int index, bool triggeredBySandstorm = false)
     {
         if (index < 0 || index >= cells.Count) return;
-        cells[index].Toggle();
+        cells[index].Toggle(triggeredBySandstorm);
     }
 
     bool IsSolved()
@@ -89,23 +102,29 @@ public class Room : MonoBehaviour
             if (!c.isOn) return false;
         return true;
     }
-    public void ResetRoom()
-    {
-        for (int i = 0; i < cells.Count; i++)
-        {
-            cells[i].SetType(initialTypes[i]);
-            if (cells[i].isOn != initialOnStates[i])
-            {
-                cells[i].Toggle(); // flips back to original state
-            }
-            cells[i].leavesCooldown = 0;
-        }
-    }
 
     public void UpdateLeavesCells()
     {
         foreach (var cell in cells)
             cell.TickCooldown();
+    }
+    public void TriggerSandstorm(int index)
+    {
+        int row = index / width;
+        int col = index % width;
+
+        // UP
+        for (int r = row - 1; r >= 0; r--)
+            Flip(r * width + col, true);
+        // DOWN
+        for (int r = row + 1; r < height; r++)
+            Flip(r * width + col, true);
+        // LEFT
+        for (int c = col - 1; c >= 0; c--)
+            Flip(row * width + c, true);
+        // RIGHT
+        for (int c = col + 1; c < width; c++)
+            Flip(row * width + c, true);
     }
 
     // Call this before destroying the room

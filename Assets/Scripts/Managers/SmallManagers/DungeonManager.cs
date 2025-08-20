@@ -109,6 +109,7 @@ public class DungeonManager : MonoBehaviour
     public void OnRoomSolved(Room solvedRoom)
     {
         RoomClearUIManager.Instance.ShowRoomCleared(solvedRoom.roomData.roomName);
+        PlayerStats.Instance.AddCoins(solvedRoom.roomData.coinReward);
         SpawnNextRoom();
     }
 

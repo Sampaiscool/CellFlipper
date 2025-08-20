@@ -11,11 +11,12 @@ public class RoomSO : ScriptableObject
     public int height = 3;
 
     [Header("Cell Types (length = width * height)")]
-    public int[] cellTypes; // 0 = inactive, 1 = normal, 2 = trap, etc.
+    public int[] cellTypes; // 0 = inactive, 1 = normal, 2 = leaves, etc.
 
     [Header("Optional Metadata")]
     public string roomName;
     public float timeLimit = 60f;
+    public int coinReward = 0;
 
     [Header("Classification")]
     public Themes theme;
